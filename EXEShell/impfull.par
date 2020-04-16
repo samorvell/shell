@@ -1,0 +1,9 @@
+buffer=32768 
+file=/home/exploja.dmp
+grants=n
+commit=y
+indexes=n
+rows=y
+ignore=y
+fromuser=ops$storep
+touser=ops$storep

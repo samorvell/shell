@@ -1,0 +1,10 @@
+shift;shift;shift;shift;shift
+server=DPD-LOJA77
+service=LPMATRM
+password=
+(
+echo translate
+echo "print -"
+cat $*
+)|/usr/bin/smbclient "\\\\\\\$server\\\$service"$password -N -P >/dev/null/
+exit $?

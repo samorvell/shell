@@ -1,0 +1,21 @@
+#!/bin/sh
+DATA=`date "+%d%m%H%M%S"`
+NUM_LOJA=`cat < /home/store/suporte/lojas |cut -c1-4`
+
+for LOJA in $NUM_LOJA
+ do
+  LJ=`echo $LOJA | cut -c1-2`
+  PASS=`echo $LOJA | cut -c3-4`
+  rsh 171.$LJ.0.1 "ls -lia /home/operator/status* | grep -v '_OK'" >/tmp/lixo.$LJ
+if test -s /tmp/lixo.$LJ                                               
+   then                                                                
+      echo From: root@MAKRO88 > /tmp/verifica_reorg                   
+      echo 'To:geraldo@makro.com.br' >> /tmp/verifica_reorg            
+      echo 'cc:noboru@makro.com.br' >> /tmp/verifica_reorg             
+      a="Subject:Status Reorganizações de Tabela loja$LJ `date`"
+      echo $a >> /tmp/verifica_reorg                                   
+      cat /tmp/lixo.$LJ >> /tmp/verifica_reorg                         
+      cat /tmp/verifica_reorg | /usr/lib/sendmail geraldo@makro.com.br 
+fi                                                                     
+  done
+ HORA=`date "+%H%M%S"`

@@ -1,0 +1,9 @@
+buffer=32768
+grants=y
+indexes=y
+rows=y
+constraints=y
+compress=y
+userid=flavio/flavio_ho
+tables=(INVOICE)
+file=/work/FISCO_30051997.dmp

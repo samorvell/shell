@@ -1,0 +1,75 @@
+#!/bin/bash
+#Verificar lojas no toad, na tabela NRSTAUS, quais loja estao com erro no scrcom
+#Informar a data do run date, informar as lojas separadas por espacos, que sera executado.
+#|-------------------------------------------------------------|
+#|      Shel para reprocessar arquivos SCRCOM             		 |
+#|      V. 1.1																								 |
+#|			V. 1.2 Adicionado teste se arquivos constam no				 |
+#|      diretorio, se não tiver ele pergunta se e para				 | 
+#|      copiar do diretorio old																 |
+#|			para o diretorio anterior.                             |
+#|      Author Samuel Amaro da Silva                           |
+#|-------------------------------------------------------------|
+
+clear
+read -p "Informe a data do rundate aaaammdd: " DATA
+DIA=`julian $DATA`
+read -p "Entre com a LOJA (ou lojas separadas por espaco) " LJ
+
+for file in $LJ ;
+do
+DIR=/home2/makro/st_rcv/str_000$file/scrcom$DIA
+if [ -e $DIR ]	; then
+	echo "Arquivo esta no diretorio! "
+		else
+		echo "Arquivos nao estao no diretorio deseja procurar no old? (sim ou nao)"
+		read RESP
+			if [ $RESP != sim  ] ; then			
+				for file in $LJ  ;   do
+				cp /home2/makro/st_rcv/str_000$file/old/scrcom$DIA.gz /home2/makro/st_rcv/str_000$file/scrcom$DIA.gz
+				DIR=/home2/makro/st_rcv/str_000$file/scrcom$DIA.gz
+				gunzip  $DIR
+				echo "Arquivos copiados para o direntorio anterior! "
+				done
+
+		
+PRGEXE=/tmp/${LOGNAME}_SCRCOM_roda.sql
+rm -rf /home0/users/trescon/SCRCOM/procscrcom/*.sql
+cp /home2/makro/st_rcv/str_000$file/scrcom$DIA /home0/users/trescon/SCRCOM/procscrcom/scrcom$DIA$file.sql
+PRG=/home0/users/trescon/SCRCOM/procscrcom/scrcom$DIA$file.sql
+cat > $PRGEXE << end_sql
+SET ECHO OFF
+SET HEADING OFF
+SET VERIFY OFF
+SET PAGESIZE 0
+SET LINESIZE 600
+SET FEEDBACK OFF
+alter session set NLS_NUMERIC_CHARACTERS = ',.';
+SPOOL /tmp/&1.$LOGNAME
+-- PL/SQL 'EXECUTANDO LOJA:', STORE_NO from STORE;
+end_sql
+cat  $PRG  >>  $PRGEXE
+cat >> $PRGEXE << end_sql
+spool off
+exit;
+end_sql
+
+cd /home0/users/trescon/SCRCOM/procscrcom/
+ sqlplus $ORAID @$PRG                   #/home0/users/trescon/SCRCOM/procscrcom/scrcom$DIA$file.sql
+
+sleep 1
+#cp /home2/makro/st_rcv/str_000$LJ/scrcom$DIA /home0/users/trescon/SCRCOM/procscrcom/scrcom$DIA$LJ.sql
+#sqlplus $ORAID @/home0/users/trescon/SCRCOM/procscrcom/scrcomlojas/scrcom$DIA$ESTORE.sql
+#mv /home0/users/trescon/SCRCOM/procscrcom/scrcom$DIA$LJ.sql /home0/users/trescon/SCRCOM/procscrcom/scrcom$DIA$LJ.sql_teste_ok
+done
+cd  /home0/users/trescon/SCRCOM/procscrcom/
+DIR=/home0/users/trescon/SCRCOM/procscrcom/*.sql /home0/users/trescon/SCRCOM/procscrcom/scrcomlojas/
+cp $DIR
+tar -cf scrcom$DIA.tar /home0/users/trescon/SCRCOM/procscrcom/scrcomlojas/*.sql 2> /dev/null
+cd /home0/users/trescon/SCRCOM/procscrcom/scrcomlojas/
+bzip2 scrcom$DIA.tar /home0/users/trescon/SCRCOM/procscrcom/scrcom$DIA.tar 2> /dev/null
+mv /home0/users/trescon/SCRCOM/procscrcom/scrcom$DIA.tar.bz2 /home0/users/trescon/SCRCOM/procscrcom/scrcomlojas/
+rm -rf /home0/users/trescon/SCRCOM/procscrcom/*.sql
+rm -rf /home0/users/trescon/SCRCOM/procscrcom/scrcomlojas/*.sql
+echo "Arquivos compactados"
+echo "e deletados com sucesso!"

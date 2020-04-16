@@ -1,0 +1,13 @@
+tables=(
+
+CUST_SALES                     ,                                                
+TESTE )
+buffer=32768
+file=/work/tspace_tab.dmp
+grants=n
+commit=y
+indexes=n
+rows=y
+ignore=y
+fromuser=ops$storep
+touser=ops$storep

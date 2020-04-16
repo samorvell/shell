@@ -1,0 +1,7 @@
+[H[Jcpio: --link is meaningless with --extract
+lp: Error - unable to access "/home/correio/geral/*.lst" - No such file or directory
+lp: Error - unable to access "/home/correio/geral/*.LST" - No such file or directory
+ls: /home/correio/geral/GE.SCRIPT.SCT: No such file or directory
+sh: /home/correio/geral/GE.SCRIPT.SCT: No such file or directory
+/home/operator/correio_lj.sh: line 62: banner: command not found
+lp: Error - stdin is empty, so no job has been sent.

@@ -1,0 +1,10 @@
+buffer=32768
+file=/work/ARQUIVOS/exp000.$SEMANA
+grants=n
+commit=y
+indexes=n
+rows=y
+ignore=y
+tables=(invoice,invoice_line,invoice_vat)
+fromuser=ops$storep              
+touser=flavio              

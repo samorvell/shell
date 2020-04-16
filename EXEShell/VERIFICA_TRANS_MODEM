@@ -1,0 +1,23 @@
+#!/bin/ksh
+#------------------------------------------------------------------------------#
+# Programa p/ verificação de transmissão por modem e envio email p/ João Nadir #
+#------------------------------------------------------------------------------#
+
+           if test `uulog | grep -c "conversation complete cua/b" ` -gt 0
+              then 
+                 echo ""
+              else 
+              if test `cat /home/operator/UULOG_TRANS_MODEM | grep -c "conversation complete cua/b" ` -gt 0
+                 then 
+                    echo ""
+                 else 
+                    echo From: root@MAKRO$LJ > /home/operator/EMAIL_TRANS_MODEM
+                    echo 'To:geraldo@makro.com.br' >> /home/operator/EMAIL_TRANS_MODEM 
+#                   echo 'cc:noboru@makro.com.br' >> /home/operator/EMAIL_TRANS_MODEM 
+                    a='Subject:Transmissão Modem '`date` 
+                    echo $a >> /home/operator/EMAIL_TRANS_MODEM 
+                    echo "Não foi executado a transmissão via Modem" >> /home/operator/EMAIL_TRANS_MODEM
+                    cat /home/operator/EMAIL_TRANS_MODEM | /usr/lib/sendmail geraldo@makro.com.br
+
+              fi 
+           fi

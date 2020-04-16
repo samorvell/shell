@@ -1,0 +1,4 @@
+trescon   2210     1  0 14:57 pts/0    00:00:00 sqlplus                 @/home0/makro/progs/exe/ins_rest_gl_lines 20161011
+trescon  19439   866  0 15:01 pts/0    00:00:00 grep ins_rest_gl_line
+trescon   2210     1  0 14:57 ?        00:00:00 sqlplus                 @/home0/makro/progs/exe/ins_rest_gl_lines 20161011
+trescon   8170  7640  0 15:11 pts/1    00:00:00 grep ins_rest_gl_line

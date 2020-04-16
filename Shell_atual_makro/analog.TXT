@@ -1,0 +1,21 @@
+#! /bin/bash
+clear
+echo "Informe a data para analise do arquivo:"
+read DATA
+echo
+dia=`julian $DATA`
+echo "Dia juliano: $dia"
+echo
+cd $MS_LIST/log
+ls -ltr honight2.$dia
+echo
+echo "Gostaria de abrir o arquivo no vim para analise?"
+        echo "Sim ou Não?"
+read RESPOSTA
+
+test $RESPOSTA = sim
+if [ $? -eq 0 ] ; then
+        vim honight2.$dia
+else
+echo "Ok!"
+fi

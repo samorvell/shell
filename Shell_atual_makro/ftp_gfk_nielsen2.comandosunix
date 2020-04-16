@@ -1,0 +1,50 @@
+--
+-- Conectar com suheadof
+--
+
+--
+-- Transferir os movimentos para GFK ( terça-feira )
+--
+
+
+sh $MS_PROGS/rt_prc_ftp gfkftp.gfk.com GFK000857 WAeGkWk.s+Q5 UNIX put /tmp lojas_gfk.txt /Data_Exchange/GFK000857 lojas_gfk.txt
+
+sh $MS_PROGS/rt_prc_ftp gfkftp.gfk.com GFK000857 WAeGkWk.s+Q5 UNIX put /tmp mv201628_gfk.txt /Data_Exchange/GFK000857 mv201628gfk.txt
+
+sh $MS_PROGS/rt_prc_ftp gfkftp.gfk.com GFK000857 WAeGkWk.s+Q5 UNIX put /tmp depto_gfk.txt /Data_Exchange/GFK000857 depto_gfk.txt
+
+sh $MS_PROGS/rt_prc_ftp gfkftp.gfk.com GFK000857 WAeGkWk.s+Q5 UNIX put /tmp produtos_gfk.txt /Data_Exchange/GFK000857 produtos_gfk.txt
+
+
+--
+-- Transferir os movimentos para NIELSEN ( terça-feira )
+--
+
+
+cp $MS_SEND/lojas.txt $MS_SEND/LOJAS_MAKRO.TXT
+
+compress -f $MS_SEND/LOJAS_MAKRO.TXT
+
+sh $MS_PROGS/rt_prc_sftp namft.nielsen.com mft@makro.br 22 put $MS_SEND /DELIVERY LOJAS_MAKRO.TXT.Z LOJAS_MAKRO.TXT.Z T 
+
+
+cp $MS_SEND/mv201628.txt $MS_SEND/MV201628_MAKRO.TXT
+
+compress -f $MS_SEND/MV201628_MAKRO.TXT
+
+sh $MS_PROGS/rt_prc_sftp namft.nielsen.com mft@makro.br 22 put $MS_SEND /DELIVERY MV201628_MAKRO.TXT.Z MV201628_MAKRO.TXT.Z T 
+
+
+cp $MS_SEND/produtos.txt $MS_SEND/PRODUTOS_MAKRO.TXT
+
+compress -f $MS_SEND/PRODUTOS_MAKRO.TXT
+
+sh $MS_PROGS/rt_prc_sftp namft.nielsen.com mft@makro.br 22 put $MS_SEND /DELIVERY PRODUTOS_MAKRO.TXT.Z PRODUTOS_MAKRO.TXT.Z T 
+
+
+cp $MS_SEND/depto.txt $MS_SEND/DPTO_MAKRO.TXT
+
+compress -f $MS_SEND/DPTO_MAKRO.TXT
+
+sh $MS_PROGS/rt_prc_sftp namft.nielsen.com mft@makro.br 22 put $MS_SEND /DELIVERY DPTO_MAKRO.TXT.Z DPTO_MAKRO.TXT.Z T 
+

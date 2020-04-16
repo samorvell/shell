@@ -1,0 +1,27 @@
+#! /bin/bash
+read -p "
+                          MAKRO ATACADISTA S.A
+
+                        M E N U   P R I N C I P A L
+
+
+                          1 - GL Posto e Restaurante
+                          2 - Reprocessar arquivos SCRCOM
+
+
+                          Opcao Escolhida --> " OPT
+case $OPT in
+1) echo "Carregando programa! "
+        ./GLPOSRES.sh
+;;
+
+2) echo "Carregrando programa! "
+
+        ./SCRCOM.sh
+
+;;
+
+
+*)echo "Favor informar uma opcao valida!"
+
+esac

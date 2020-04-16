@@ -1,0 +1,65 @@
+UID        PID  PPID  C STIME TTY          TIME CMD
+dbus      3398     1  0 Jul22 ?        00:00:00 dbus-daemon --system
+smmsp     3601     1  0 Jul22 ?        00:00:00 sendmail: Queue runner@01:00:00 for /var/spool/clientmqueue
+xfs       3764     1  0 Jul22 ?        00:00:00 xfs -droppriv -daemon
+68        4031     1  0 Jul22 ?        00:00:02 hald
+68        4039  4032  0 Jul22 ?        00:00:00 hald-addon-acpi: listening on acpid socket /var/run/acpid.socket
+68        4049  4032  0 Jul22 ?        00:00:00 hald-addon-keyboard: listening on /dev/input/event0
+rb00      4447     1  0 08:00 ?        00:00:00 /bin/ksh /home/store/progs/exe/open_store.sh
+gerali    5657  4824  0 12:41 ?        00:00:00 sshd: gerali@pts/5
+gerali    5658  5657  0 12:41 pts/5    00:00:00 -ksh
+tiprd     5699  5511  0 09:39 ?        00:00:00 sshd: tiprd@pts/2
+tiprd     5700  5699  0 09:39 pts/2    00:00:00 -ksh
+gerali    5723  5658  0 12:41 pts/5    00:00:00 f60run MFSTOREE ops$gerali/ops$gerali
+tlv       7823  7441  0 12:25 ?        00:00:00 sshd: tlv@pts/8  
+tlv       7824  7823  0 12:25 pts/8    00:00:00 -ksh
+tlv       7908  7824  0 12:25 pts/8    00:00:00 f60run MFSTOREE ops$tlv/ops$tlv
+rm        8255  8001  0 12:41 ?        00:00:00 sshd: rm@pts/12  
+rm        8256  8255  0 12:41 pts/12   00:00:00 -ksh
+rm        8322  8256  0 12:41 pts/12   00:00:00 f60run MFSTOREE ops$rm/ops$rm
+gerali    8949  8325  0 12:41 ?        00:00:00 sshd: gerali@pts/14
+gerali    8962  8949  0 12:42 pts/14   00:00:00 -ksh
+gerali    9019  8962  0 12:42 pts/14   00:00:00 f60run MFSTOREE ops$gerali/ops$gerali
+tlv       9415  9236  0 12:01 ?        00:00:00 sshd: tlv@pts/13 
+tlv       9416  9415  0 12:01 pts/13   00:00:00 -ksh
+tlv       9473  9416  0 12:01 pts/13   00:00:00 f60run MFSTOREE ops$tlv/ops$tlv
+rm       10718 10526  0 12:42 ?        00:00:00 sshd: rm@pts/16  
+rm       10719 10718  0 12:42 pts/16   00:00:00 -ksh
+rm       10782 10719  0 12:42 pts/16   00:00:00 f60run MFSTOREE ops$rm/ops$rm
+tlv      12804 12580  0 11:13 ?        00:00:00 sshd: tlv@pts/0  
+tlv      12808 12804  0 11:13 pts/0    00:00:00 -ksh
+tlv      12875 12808  0 11:13 pts/0    00:00:03 f60run MFSTOREE ops$tlv/ops$tlv
+gerali   22259 21933  0 10:50 ?        00:00:00 sshd: gerali@pts/4
+gerali   22260 22259  0 10:50 pts/4    00:00:00 -ksh
+gerali   22323 22260  0 10:50 pts/4    00:00:03 f60run MFSTOREE ops$gerali/ops$gerali
+gerali   22614 20897  0 12:45 ?        00:00:00 sshd: gerali@pts/1
+gerali   22617 22614  0 12:45 pts/1    00:00:00 -ksh
+gerali   22683 22617  0 12:45 pts/1    00:00:00 f60run MFSTOREE ops$gerali/ops$gerali
+rcp      22721 22462  0 12:13 ?        00:00:00 sshd: rcp@pts/6  
+rcp      22722 22721  0 12:13 pts/6    00:00:00 -ksh
+rcp      22782 22722  0 12:13 pts/6    00:00:00 f60run MFSTOREE ops$rcp/ops$rcp
+gerali   23202 21724  0 11:56 ?        00:00:00 sshd: gerali@pts/9
+gerali   23203 23202  0 11:56 pts/9    00:00:00 -ksh
+gerali   23266 23203  0 11:56 pts/9    00:00:00 f60run MFSTOREE ops$gerali/ops$gerali
+tlv      25110 24881  0 11:57 ?        00:00:00 sshd: tlv@pts/11 
+tlv      25111 25110  0 11:57 pts/11   00:00:00 -ksh
+tlv      25174 25111  0 11:57 pts/11   00:00:02 f60run MFSTOREE ops$tlv/ops$tlv
+cfi      25970 25831  0 10:29 ?        00:00:00 sshd: cfi@pts/19 
+cfi      25974 25970  0 10:29 pts/19   00:00:00 -ksh
+cfi      26034 25974  0 10:29 pts/19   00:00:02 f60run MFSTOREE ops$cfi/ops$cfi
+gerali   26562 26183  0 12:38 ?        00:00:00 sshd: gerali@pts/7
+gerali   26563 26562  0 12:38 pts/7    00:00:00 -ksh
+gerali   26620 26563  0 12:38 pts/7    00:00:00 f60run MFSTOREE ops$gerali/ops$gerali
+rcp      30388 29844  0 12:23 ?        00:00:00 sshd: rcp@pts/3  
+rcp      30392 30388  0 12:23 pts/3    00:00:00 -ksh
+rcp      30461 30392  0 12:23 pts/3    00:00:00 f60run MFSTOREE ops$rcp/ops$rcp
+rb00     30482  4447  0 12:47 ?        00:00:00 msleep 60 /home/rxtx/str_00006/rcv/rorcom.str00006.15204
+tlv      31017  9473  0 12:47 pts/13   00:00:00 sh -c $MS_PROGS/cl010.sh 00054 00000000 0 17339135000189 0
+tlv      31344 31017  1 12:47 pts/13   00:00:00 f60run /home/store/forms60/exe/CL200 ops$rcp/ops$rcp@MAKRO54 CLIENTE_EXTERNO=00000000 NMVERPAS_EXTERNO=0 ANRAZSOC_EXTERNO=0 CACGC_EXTERNO=17339135000189
+operator 31357 30959  0 12:47 ?        00:00:00 sshd: operator@pts/17
+operator 31361 31357  0 12:47 pts/17   00:00:00 -ksh
+operator 31407 31361  0 12:47 pts/17   00:00:00 sh /home/operator/menu.sh
+operator 31472 31407  0 12:47 pts/17   00:00:00 sh ./processos.sh
+rcp      31678 30461  0 12:39 pts/3    00:00:00 sh -c $MS_PROGS/cl010.sh 00010 00000000 0 30047419890 0
+rcp      31898 31678  0 12:39 pts/3    00:00:00 f60run /home/store/forms60/exe/CL200 ops$rcp/ops$rcp@MAKRO10 CLIENTE_EXTERNO=00000000 NMVERPAS_EXTERNO=0 ANRAZSOC_EXTERNO=0 CACGC_EXTERNO=30047419890
+operator 31909 31472  0 12:47 pts/17   00:00:00 ps -eaf

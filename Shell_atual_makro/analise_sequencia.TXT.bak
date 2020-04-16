@@ -1,0 +1,5 @@
+#! /bin/bash
+/home/makro/st_rcv/str_000$1 #$1 primeira variavel numero da loja
+dia=`$2`
+ls -ltr $2 #nome do arquivo a ser analisado
+tail $2

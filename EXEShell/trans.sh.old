@@ -1,0 +1,533 @@
+####################################################################
+#  Transmissao de Arquivos:    LOJA x HO X LOJA                    #
+#  Alterado em Fevereiro/98 - Marco             versao: 001/03/98  #
+#  Alterado em julho/2001   - Noboru (Incluido AC61001).           #
+####################################################################
+clear
+TOFF=`tput rmso`
+TBOLD=`tput bold`
+TBLINK=`tput blink`
+TRES=`tput smso`
+opc=99; msg=" " 
+while test $opc -ne 0 
+do 
+#-----------------------------------------------------------------------------#
+# CABEC_OPERATOR.sh # Cria cabecalho                                           
+#-----------------------------------------------------------------------------#
+
+  clear;tput rev
+  echo "     " $RAZAO "      " $LOJA "   " $DIA_SEM $DIA $MES $ANO $HORA
+  tput cup 2 29
+  echo "T R A N S M I S S Ã O  C O M S A T" 
+  tput sgr0
+  echo 
+  echo "                            $TBOLD 1$TOFF - Situação das Transmissões"
+  #echo "                            $TBOLD 2$TOFF - Log das Transmissões "
+  echo "                            $TBOLD 3$TOFF - Receber Arquivos TX.XXXXXX.LJ.XX"
+  echo "                            $TBOLD 4$TOFF - Enviar Arquivos  RX.XXXXXX.LJ.XX"
+  echo "                            $TBOLD 5$TOFF - Receber Relatórios "
+  echo "                            $TBOLD 8$TOFF - Limpar locks, log, TMP, LOGIN FAILLED"
+  echo "                            $TBOLD 9$TOFF - Mostrar os arquivos da Loja"
+  echo "                           $TBOLD 13$TOFF - Verificar arquivos DISPONÍVEIS no H.O. (TX)"
+  echo "                           $TBOLD  0$TOFF - Retorno ao Menu anterior"
+  tput cup 21 0;                                                      
+  echo "                             Opcao Escolhida -->  "  >/dev/tty
+  tput cup 21 49;
+  read opc  
+  echo 
+  case $opc in 
+    1) clear;
+       echo > A
+       if test `ps -eaf | grep -v grep | grep -c UUCICO ` -ne 0 
+       then 
+          ps -eaf | grep UUCICO | grep -v grep >> A
+          echo >> A
+          echo "Existem dados sendo transmitidos no momento" >> A
+       else
+         if test `ps -eaf |grep -v grep | grep -c uucico ` -ne 0 
+         then 
+            ps -eaf| grep uucico |grep -v grep  >> A
+          echo >> A
+            echo "Existem dados sendo transmitidos no momento" >> A
+         else
+            echo
+            #echo " Nao ha transmissao no momento"   >> A
+         fi
+       fi;
+       echo >> A 
+       echo " Status das Transmissao / Recepcao " >> A
+       echo >> A
+       echo;uustat >> A;
+       uustat -m >> A; more A; rm -f A
+       echo $LJ \(Status das Transmissoes\) `date` `tty` >> $OPERATOR/LOG.OPERATOR;;
+    #2) sh $OPERATOR/geralog.sh
+    #   sh $OPERATOR/log.sh
+    #   echo $LJ \(Log das Transmissoes\) `date` `tty` >> $OPERATOR/LOG.OPERATOR;;
+    3) clear;
+       tput clear
+       tput cup 0 29
+       echo "A R Q U I V O S"
+       echo " "
+       echo " "
+       echo " 1  -  ALTERAÇÃO ......................(TX.AC92001.LJXX)"
+       echo " 3  -  PEDIDO..........................(TX.PC54201.LJXX)"
+       echo " 4  -  ESTOQUE.........................(TX.MAIV595.LJXX)"
+       echo " 5  -  VENDAS EXTERNAS ................(TX.AC94501.LJXX)" 
+       echo " 6  -  NOTAS FISCAIS DO FORNECEDOR.....(TX.RA74001.LJXX)" 
+       echo " 7  -  OUTRO ARQUIVO..................."               
+       echo " "
+       echo "CODIGO DO ARQUIVO DE TRANSMISSÃO PARA LOJA \c"; read COD 
+       if test $LJ = HO 
+          then 
+               echo;echo "NUMERO DA LOJA                \c"; read NLJ 
+          else 
+               NLJ=$LJ
+       fi 
+       chmod 777 /home/rxtx/loja$NLJ/* > /dev/null 2>&1
+       case $COD in
+         1) ARQVEM="/home/rxtx/loja$NLJ/TX.AC92001.LJ$NLJ.Z"; 
+                    sh /home/store1/log/rbrcvmbs;;
+         3) ARQVEM="/home/rxtx/loja$NLJ/TX.PC54201.LJ$NLJ.Z";;
+         4) ARQVEM="/home/rxtx/loja$NLJ/TX.MAIV595.LJ$NLJ.Z";;
+         5) ARQVEM="/home/rxtx/loja$NLJ/TX.AC94501.LJ$NLJ.Z";;
+         6) ARQVEM="/home/rxtx/loja$NLJ/TX.RA74001.LJ$NLJ.Z";;
+         7) echo;echo "NOME DO ARQUIVO               \c"; read ARQ ;
+            ini=`echo $ARQ |cut -c1-3 `
+            if [ $ini = "TX." ]
+               then  
+               echo;echo "Use as opcoes de 1 a 7 para TX..." 
+               ARQVEM=err
+            else
+               ARQVEM="/home/rxtx/loja$NLJ/$ARQ"
+            fi;;
+         *) ARQVEM=err;;
+       esac
+       HORA=`date |cut -c12-13 `
+       if [ "$ARQVEM" = err ]
+       then
+          echo;echo "Opcao invalida!!!";echo
+          exit
+       else
+         if test $LJ = HO  
+            then                                  
+               WC=`wc -l $ARQVEM|cut -c1-9`;echo;echo $ARQVEM - $WC BLOCOS;echo;
+            echo;echo   uucp $ARQVEM MAKRO$NLJ!$ARQVEM 
+                        uucp $ARQVEM MAKRO$NLJ!$ARQVEM 
+         else 
+               echo;echo  uucp MAKROHO!$ARQVEM $ARQVEM 
+               uucp MAKROHO!$ARQVEM $ARQVEM
+               if test $COD = 2
+                  then
+                  ARQTMP1=""
+                  ARQVAI="/home/rxtx/loja$NLJ/RX.RBRETEXE.?????.LJ$NLJ \                                  /home/rxtx/loja$NLJ/RX.RBRETLOG.?????.LJ$NLJ";
+                  compress -f $ARQVAI > /dev/null 2>&1
+               for ARQTMP in $ARQVAI
+                 do
+                   ARQTMP1=$ARQTMP1"  "$ARQTMP.Z
+                 done
+               for ARQVAI in $ARQTMP1
+                 do
+               if test -s $ARQVAI
+               then   
+               WC=`wc -l $ARQVEM|cut -c1-9`;echo;echo $ARQVEM - $WC BLOCOS;echo;
+               WC=`wc -l $ARQVAI |cut -c1-9`
+               echo $ARQVAI -$WC BLOCO\(S\);
+               echo uucp $ARQVAI MAKROHO!$ARQVAI
+                    uucp $ARQVAI MAKROHO!$ARQVAI
+               fi
+                done
+               fi
+               if test $COD = 3 
+                  then
+	          MALOTE=SUNOTE; export MALOTE 
+	          SCRIPT=GE.SCRIPT.SCT; export SCRIPT
+		  DIR=/home/correio/geral/; export DIR
+                  nohup sh $OPERATOR/correio_lj.sh > /dev/null 2>&1 & 
+               fi  
+         fi
+       fi
+       echo $LJ \(Transmissao HO LJ Codigo "$COD"\) `date` `tty` >> $OPERATOR/LOG.OPERATOR;;
+       4) clear;
+      tput clear
+      echo " 1 - INVENT NORMAL....(RX.MAIVN01.LJXX)   2 - INVENT PESO......(RX.MAIVP01.LJXX)"
+      echo " 3 - LOG ICMS ........(RX.MALF001.LJXX)   4 - MOV VENDAS......(RX.MK000601.LJXX)"
+      echo " 7 - PESQUISA.........(RX.PP60001.LJXX)   8 - POS. ESTOQUE.....(RX.AC93501.LJXX)"
+      echo " 9 - CLIENTES EXTERNOS...(RX.LOTE.LJXX)  10 - COMPROM VENDAS ..(RX.VE99801.LJXX)"
+      echo "11 - LOGS ROTINA...(RRBRETEXE/RBRETLOG)  13 - ARQUIVO FOLDER ..(RX.CL98000.LJXX)"
+      echo "14 - ETIQ FOLDER .....(RX.CL98001.LJXX)  15 - ETQ AMARRADO ....(RX.CL98002.LJXX)"
+      echo "16 - RESUMO FOLDER....(RX.CL98003.LJXX)  17 - ESTAT JOURNAL ...(RX.CL98009.LJXX)"
+      echo "18 - RESUMO POR CDD...(RX.CL98501.LJXX)  20 - RESSARC ST ......(RX.VE72001.LJXX)"
+      echo "21 - ACOMPANH (RX.?????.LST.LJXX.?????)  22 - TODOS ARQ DIARIOS ................"
+      echo "23 - OUTROS ARQUIVOS ..................  99 - TESTE DIÁRIO MODEM................"
+echo ""
+      echo "     CÓDIGO DO ARQUIVO DE TRANSMISSÃO PARA H.O. "; read COD 
+          if test $LJ = HO
+             then 
+                 echo;echo "NUMERO DA LOJA                \c"; read NLJ
+             else
+                 NLJ=$LJ  
+          fi;
+          case $COD in
+             1) ARQVAI="/home/rxtx/loja$NLJ/RX.MAIVN01.LJ$NLJ";;
+             2) ARQVAI="/home/rxtx/loja$NLJ/RX.MAIVP01.LJ$NLJ";;
+             3) ARQVAI="/home/rxtx/loja$NLJ/RX.MALF001.LJ$NLJ";;
+             4) ARQVAI="/home/rxtx/loja$NLJ/RX.MK000601.LJ$NLJ \
+                        /home/rxtx/loja$NLJ/RX.MK000601.LJ$NLJ.?????";;
+             7) ARQVAI="/home/rxtx/loja$NLJ/RX.PP60001.LJ$NLJ";;
+             8) ARQVAI="/home/rxtx/loja$NLJ/RX.AC93501.LJ$NLJ";;
+             9) ARQVAI="/home/rxtx/loja$NLJ/RX.LOTE.LJ$NLJ";;
+             10) ARQVAI="/home/rxtx/loja$NLJ/RX.VE99801.LJ$NLJ";;
+             11) ARQVAI="/home/rxtx/loja$NLJ/RX.RBRETEXE.?????.LJ$NLJ \
+                         /home/rxtx/loja$NLJ/RX.RBRETLOG.?????.LJ$NLJ";;
+             13) ARQVAI="/home/rxtx/loja$NLJ/RX.CL98000.LJ$NLJ";;
+             14) ARQVAI="/home/rxtx/loja$NLJ/RX.CL98001.LJ$NLJ";;
+             15) ARQVAI="/home/rxtx/loja$NLJ/RX.CL98002.LJ$NLJ";;
+             16) ARQVAI="/home/rxtx/loja$NLJ/RX.CL98003.LJ$NLJ";;
+             17) ARQVAI="/home/rxtx/loja$NLJ/RX.CL98009.LJ$NLJ";;
+             18) ARQVAI="/home/rxtx/loja$NLJ/RX.CL98501.LJ$NLJ";;
+             20) ARQVAI="/home/rxtx/loja$NLJ/RX.VE72001.LJ$NLJ";;
+             21) ARQVAI="/home/rxtx/loja$NLJ/RX.?????.LST.LJ$NLJ.????? \
+                         /home/rxtx/loja$NLJ/RX.RL54001.LJ$NLJ";;
+# OPCAO PARA ENVIO DE TODOS OS ARQUIVOS DE TRANSMISSAO
+             22) find /home/store1/log -name "rbctltrn.?????" -mtime -1 -print -exec sh {} \;
+                 ARQVAI=sai
+                 ;;
+             23) echo;echo "NOME DO ARQUIVO               \c"; read ARQ ;
+                ARQVAI="/home/rxtx/loja$NLJ/$ARQ";;
+             99) ARQVAI="/home/rxtx/loja$NLJ/RX.TRANSM.MODEM.LJ$NLJ";
+                find /home/appl -print > /home/rxtx/loja$LJ/RX.TRANSM.MODEM.LJ$LJ
+                chmod 777 /home/rxtx/loja$LJ/RX.TRANSM.MODEM.LJ$LJ;;
+             *) ARQVAI=err;;
+          esac            
+
+          if [ "$ARQVAI" = sai ]
+            then 
+             exit
+          fi
+          if [ "$ARQVAI" = err ]
+            then 
+             echo;echo "Opcao invalida !!!!";echo;echo
+             exit
+          else
+             compress -f $ARQVAI > /dev/null 2>&1         
+             ARQTMP1=""
+             for  ARQTMP in $ARQVAI
+              do
+                 ARQTMP1=$ARQTMP1" "$ARQTMP.Z
+              done
+             for  ARQTRN in $ARQTMP1
+               do
+                 if test -s $ARQTRN  
+                 then 
+                   if  test $LJ = HO
+                   then
+               WC=`wc -l $ARQVAI|cut -c1-9`;echo;echo $ARQVAI - $WC BLOCOS;echo;
+                     echo uucp MAKRO$NLJ!$ARQTRN $ARQTRN 
+                          uucp MAKRO$NLJ!$ARQTRN $ARQTRN 
+                   else 
+               echo
+               WC=`wc -l $ARQVAI|cut -c1-9`;echo;echo $ARQVAI - $WC BLOCOS;echo;
+                     WC=`wc -l $ARQTRN |cut -c1-9`;
+                     echo $ARQTRN - $WC BLOCO\(S\);
+                     echo uucp $ARQTRN MAKROHO!$ARQTRN 
+                          uucp $ARQTRN MAKROHO!$ARQTRN 
+                   fi
+                 else  
+                   echo 'ARQUIVO:   '$ARQTRN'  NAO EXISTE '   >/dev/tty;
+                 fi;
+             done
+          fi
+          echo $LJ \(Transmissao LJ HO codigo "$COD"\) `date` `tty` >> $OPERATOR/LOG.OPERATOR;;
+     5) clear ;
+       Tput clear
+       tput cup 0 25
+      echo "R E L A T Ó R I O S"
+      echo ""
+      echo "21 - ESTAT VENDAS.....(TX.ET80501.LJXX)  22 - ESTOQUE X CT PG (TX.IC18801.LJXX)"
+      echo "23 - OCORRÊNCIAS ORDER(TX.PC51301.LJXX)  24 - COMPR VENDA ....(TX.VE80501.LJXX)"
+      echo "25 - LIVRO DE SAÍDA...(TX.LF14001.LJXX)  26 - ESTAT VENDA ACUM(TX.ET91601.LJXX)"
+      echo "27 - RELAT INVENTÁRIO (TX.IV54501.LJXX)  28 - INV. PERERCÍVEIS(TX.IV91501.LJXX)"
+      echo "29 - INV. PERECÍVEIS..(TX.IV94001.LJXX)  30 - NIVEL SORTIMENTO(TX.SO69001.LJXX)" 
+      echo "31 - CONTA RESULTADO..(TX.GL09001.LJXX)  32 - DESEMPENHO MENS (TX.ET86601.LJXX)" 
+      echo "33 - CHQ DEVOLV .... .(TX.GL17001.LJXX)  34 - CONTR INVENTARIO(TX.IV60801.LJXX)"
+      echo "35 - BONIFICAÇÕES.....(TX.ET91001.LJXX)  36 - MAKRO MAIL.. ...(TX.MM52501.LJXX)"
+      echo "37 - PONTO VERMELHO...(TX.AC61001.LJXX)  38 - TRANSF INTERNAS (TX.RM52001.LJXX)" 
+      echo "39 - DESCONTOS  ......(TX.GP72001.LJXX)  40 - DESEMP. DIÁRIO  (TX.ET82501.LJXX)"
+      echo "41 - DESEMP MENSAL ...(TX.ET82601.LJXX)  42 - OUTRO ARQUIVO" 
+      echo " "
+      echo "CÓDIGO DO RELATÓRIO PARA LOJA \c"; read COD 
+      if test $LJ = HO 
+          then 
+               echo;echo "NUMERO DA LOJA                \c"; read NLJ 
+          else 
+               NLJ=$LJ
+       fi 
+       chmod 777 /home/rxtx/loja$NLJ/* > /dev/null 2>&1
+       case $COD in
+        21) ARQVEM="/home/rxtx/loja$NLJ/TX.ET80501.LJ$NLJ.Z";;
+        22) ARQVEM="/home/rxtx/loja$NLJ/TX.IC18801.LJ$NLJ.Z";;
+        23) ARQVEM="/home/rxtx/loja$NLJ/TX.PC51301.LJ$NLJ.Z";;
+        24) ARQVEM="/home/rxtx/loja$NLJ/TX.VE80501.LJ$NLJ.Z";;
+        25) ARQVEM="/home/rxtx/loja$NLJ/TX.LF14001.LJ$NLJ.Z";; 
+        26) ARQVEM="/home/rxtx/loja$NLJ/TX.ET91601.LJ$NLJ.Z";;
+        27) ARQVEM="/home/rxtx/loja$NLJ/TX.IV54501.LJ$NLJ.Z";;
+        28) ARQVEM="/home/rxtx/loja$NLJ/TX.IV91501.LJ$NLJ.Z";;
+        29) ARQVEM="/home/rxtx/loja$NLJ/TX.IV94001.LJ$NLJ.Z";;
+        30) ARQVEM="/home/rxtx/loja$NLJ/TX.SO69001.LJ$NLJ.Z";;
+        31) ARQVEM="/home/rxtx/loja$NLJ/TX.GL09001.LJ$NLJ.Z";;
+        32) ARQVEM="/home/rxtx/loja$NLJ/TX.ET86601.LJ$NLJ.Z";;
+        33) ARQVEM="/home/rxtx/loja$NLJ/TX.GL17001.LJ$NLJ.Z";;
+        34) ARQVEM="/home/rxtx/loja$NLJ/TX.IV60801.LJ$NLJ.Z";;
+        35) ARQVEM="/home/rxtx/loja$NLJ/TX.ET91001.LJ$NLJ.Z";;
+        36) ARQVEM="/home/rxtx/loja$NLJ/TX.MM52501.LJ$NLJ.Z";;
+        37) ARQVEM="/home/rxtx/loja$NLJ/TX.AC61001.LJ$NLJ.Z";;
+        38) ARQVEM="/home/rxtx/loja$NLJ/TX.RM52001.LJ$NLJ.Z";;
+        39) ARQVEM="/home/rxtx/loja$NLJ/TX.GP72001.LJ$NLJ.Z";;
+        40) ARQVEM="/home/rxtx/loja$NLJ/TX.ET82501.LJ$NLJ.Z";;
+        41) ARQVEM="/home/rxtx/loja$NLJ/TX.ET82601.LJ$NLJ.Z";;
+        42) echo;echo "NOME DO ARQUIVO               \c"; read ARQ ;
+            ini=`echo $ARQ |cut -c1-3 `
+            if [ $ini = "TX." ]
+               then  
+               echo;echo "Use as opcoes de 21 a 39 para TX..." 
+               ARQVEM=err
+            else
+               ARQVEM="/home/rxtx/loja$NLJ/$ARQ"
+            fi;;
+         *) ARQVEM=err;;
+       esac
+       HORA=`date |cut -c12-13 `
+       if [ "$ARQVEM" = err ]
+       then
+          echo;echo "Opcao invalida!!!";echo
+       else
+         if test $LJ = HO  
+            then                                  
+               WC=`wc -l $ARQVEM|cut -c1-9`;echo;echo $ARQVEM - $WC BLOCOS;echo;
+               WC=`wc -l $ARQVEM|cut -c1-9`;echo;echo $ARQVEM - $WC BLOCOS;echo;
+            echo;echo   uucp $ARQVEM MAKRO$NLJ!$ARQVEM 
+                        uucp $ARQVEM MAKRO$NLJ!$ARQVEM 
+         else 
+               WC=`wc -l $ARQVEM|cut -c1-9`;echo;echo $ARQVEM - $WC BLOCOS;echo;
+               echo;echo  uucp MAKROHO!$ARQVEM $ARQVEM 
+               uucp MAKROHO!$ARQVEM $ARQVEM
+         fi
+       fi
+       echo $LJ \(Transmissao HO LJ Codigo "$COD"\) `date` `tty` >> $OPERATOR/LOG.OPERATOR;;
+
+      #6) if test $LJ = HO 
+      #      then   
+      #           clear; ls -lai /var/spool/uucp/MAKRO* | more;
+      #      else
+      #           clear; ls -lai /var/spool/uucp/MAKROHO/Z/* | more;
+      #   fi
+      #   echo $LJ \(Verificou Chegada de Arquivos\) `date` `tty` >> $OPERATOR/LOG.OPERATOR;;
+
+  #     7) clear
+  #          echo "ESTE PROCEDIMENTO SO DEVE SER UTILIZADO EM CASOS DE EXTREMA NECESSIDADE.">/dev/tty
+  #          echo " "
+  #          echo "CERTIFIQUE-SE QUE VC NAO IRA CANCELAR TRANSMISSAO DE UM ARQUIVO IMPORTANTE.">/dev/tty
+  #          echo " "
+#	    echo "VOCE REALMENTE QUER CANCELAR TODAS TRANSMISSOES S/N ?"
+#            read RESP
+#            if test $RESP = S -o $RESP = s
+#               then
+#               clear;
+#               ps -eaf | grep UUCICO  >/tmp/b        
+#               ps -eaf | grep uucico >>/tmp/b       
+#               PROCESSOS=`cat < /tmp/b | cut -c9-14`                            
+#               if [ -n "$PROCESSOS" ]                                           
+#               then                                                             
+#               for NUM_PROC in $PROCESSOS                                       
+#               do                                                               
+#               kill -9 $NUM_PROC                                          
+#               done                                                             
+#               fi                                                               
+#               rm /tmp/b >/dev/null                                             
+#               rm -r /var/spool/uucp/MAK* >/dev/null 2>&1
+#               rm -r /var/spool/uucp/FISCAL >/dev/null 2>&1
+#               rm /var/spool/locks/* >/dev/null 2>&1
+#               clear; 
+#               echo "TODAS AS TRANSMISSOES FORAM CANCELADAS"
+#	       sleep 1
+#               echo $LJ \(Cancelou TODAS Transmissoes\) `date` `tty` >> $OPERATOR/LOG.OPERATOR
+#            else
+#               echo "Transmissoes N A O Canceladas \c"
+#	       sleep 1
+#            fi;;
+#      7) clear; 
+#         NLJ=$LJ
+#        echo;echo "Este procedimento reativa Servico de Transmissao... "
+#        if [ $LJ != HO -o $LJ != 88 ] 
+#           then 
+#               ARQVAI="/home/rxtx/loja$NLJ/RX.REATIVA.TRANS.LJ$NLJ"
+#               echo $ARQVAI
+#               find /home/appl -print > $ARQVAI
+#               chmod 777 $ARQVAI
+#               uucp MAKROHO!$ARQVAI $ARQVAI
+#               read nada
+#        else 
+#           echo "Essa opcao esta disponivel somente nas lojas"
+#        fi
+#         echo $LJ \(Reativou Servico Transmissao\) `date` `tty` >> $OPERATOR/LOG.OPERATOR;;
+#      
+      8) clear; echo;echo "AGUARDE UM MOMENTO... "
+         sudo rm /var/spool/uucp/.Status/* >/dev/null 2>&1;
+         sudo rm /var/spool/uucp/.Sequence/* >/dev/null 2>&1;
+         sudo rm /var/spool/uucp/.Admin/* >/dev/null 2>&1;
+         sudo rm /var/spool/uucp/locks/* >/dev/null 2>&1;
+         /usr/sbin/uusched
+         NAME=operator;export NAME
+         if test $LJ = HO
+            then 
+            sh $OPERATOR/logtrans.sh > /dev/null 2>&1 &
+         else
+            sh $OPERATOR/geralog.sh > /dev/null 2>&1 
+       fi
+       echo $LJ \(Limpou Locks e gerou Log\) `date` `tty` >> $OPERATOR/LOG.OPERATOR;;
+       9) clear; echo;
+          if test $LJ = HO
+             then   
+                  echo "NOME DO ARQUIVO               \c"; read ARQ 
+                  if [ -n "$ARQ" ]
+                     then 
+                     ls -lai /home/rxtx/* |grep $ARQ | more
+                  else
+                     ls -lai /home/rxtx/* | more    
+                  fi
+             else
+                  ls -lai /home/rxtx/loja$LJ | more;
+          fi
+          echo $LJ \(Mostrou Arquivos de Loja\) `date` `tty` >> $OPERATOR/LOG.OPERATOR;;
+#       10) clear;
+#         if test $LJ = HO
+#            then 
+#            sh logtrans.sh > /dev/null 2>&1 &
+#         else
+#            echo;
+#            sh geralog.sh
+#       fi
+#       echo $LJ \(Limpou Locks e gerou Log\) `date` `tty` >> $OPERATOR/LOG.OPERATOR;
+##
+#           sh /home/operator/trans_modem.sh
+#           echo $LJ \(Executou Transm Modem de Arqs\) `date` `tty` >> $OPERATOR/LOG.OPERATOR;;
+#       11) clear; uulog | more;;              
+       12) clear; $OPERATOR/ver_envio.sh;
+	   more /tmp/dirlist 
+           echo "DESEJA IMPRIMIR NA XEROX <S> / N: \c"; read resp
+           if [ -z "$resp" ]                                         
+              then                                                   
+             resp="S"                                
+           else                                                      
+              if test $resp = S -o $resp = s                         
+                 then                                                
+                 echo >>/tmp/dirlist
+                 echo " $LOJA  $DATE "  >>/tmp/dirlist
+                 lp /tmp/dirlist
+		 echo;echo "Imprimindo..."
+              fi                                                     
+           fi                                                        
+           rm /tmp/dirlist*
+           echo;;
+       #13) clear; $OPERATOR/ver_recebe.sh;
+#	   more /tmp/dirlist 
+#           echo "DESEJA IMPRIMIR NA XEROX <S> / N: \c"; read resp
+#           if [ -z "$resp" ]                                         
+#              then                                                   
+#              resp="S"                                
+#           else                                                      
+#              if test $resp = S -o $resp = s                         
+#                 then                                                
+#                 echo >>/tmp/dirlist1
+#                 echo " $LOJA  $DATE "  >>/tmp/dirlist1
+#                 lp /tmp/dirlist1
+#		 echo;echo "Imprimindo..."
+#              fi                                                     
+#           fi                                                        
+#           rm /tmp/dirlist*
+#           echo;;
+#       14) clear;
+#             NLJ=$LJ
+#             COD=FISCAL
+#             chmod 777 /home/rxtx/loja$NLJ/* > /dev/null 2>&1              
+#             ARQVAI="/home/rxtx/loja$NLJ/VE600.IN68.LJ$NLJ.???????? \
+#                      /home/rxtx/loja$NLJ/RX.CI50001.LJ$NLJ \
+#                      /home/rxtx/loja$NLJ/RX.CT80501.LJ$NLJ.????????";
+#             
+#             compress -f $ARQVAI > /dev/null 2>&1         
+#             ARQTMP1=""
+#             for  ARQTMP in $ARQVAI
+#              do
+#                 ARQTMP1=$ARQTMP1" "$ARQTMP.Z
+#              done
+#             for  ARQTRN in $ARQTMP1
+#               do
+#                 if test -s $ARQTRN  
+#                 then 
+#                   if  test $LJ = HO
+#                   then
+#                     echo uucp MAKRO$NLJ!$ARQTRN $ARQTRN 
+#                          uucp MAKRO$NLJ!$ARQTRN $ARQTRN 
+#                   else 
+#                     WC=`wc -l $ARQTRN |cut -c1-9`;
+#                     echo $ARQTRN - $WC BLOCO\(S\);
+#                     echo uucp $ARQTRN FISCAL!$ARQTRN 
+#                          uucp $ARQTRN FISCAL!$ARQTRN 
+#                   fi
+#                 else  
+#                   echo 'ARQUIVO:   '$ARQTRN'  NAO EXISTE '   >/dev/tty;
+#                 fi;
+#                done
+#          echo $LJ \(Transmissao LJ FISCAL codigo "$COD"\) `date` `tty` >> $OPERATOR/LOG.OPERATOR;;
+#       15) clear;
+#VT_RET=$?
+#if [ VT_RET != 0 ]                                                   
+#then                                                                 
+#     while                                                           
+#clear
+#echo "\07                             A T E N Ç Ã O"                      
+#echo "\07 "
+#echo "\07 O modem esta conectado no H.O ??? ( S/N)"
+#read VT_RESP;   
+#do
+#case $VT_RESP in
+#s|S) sh /home/store/suporte/add_trans.sh > /dev/null 2>&1 &
+#     exit 10;;
+#n|N) clear;echo;echo;echo;echo;echo;
+#     echo "\07 Conecte o modem no H.O, e depois execute esta função"
+#     echo;echo;echo;echo;echo;
+#     echo "\07 Tecle <enter> para continuar "; read nada
+#     exit 10;;
+# *)                                                          
+#esac                                                            
+#done                                                                
+#fi
+#;;
+#       16) clear;
+#           if test `uulog | grep -c "conversation complete cua/b" ` -gt 0
+#              then 
+#                 echo " \07 FOI EFETUADA TRANSMISSAO DE ARQUIVOS PELO MODEM" >/dev/tty
+#                 echo ""
+#                 uulog | grep "conversation complete cua/b"
+#                 echo $LJ Transmissao Modem `uulog | grep "conversation complete cua/b"` `date` `tty` >> $OPERATOR/LOG.OPERATOR;
+#              else 
+#              if test `cat $OPERATOR/UULOG_TRANS_MODEM | grep -c "conversation complete cua/b" ` -gt 0
+#                 then 
+#                 echo " \07 FOI EFETUADA TRANSMISSAO DE ARQUIVOS PELO MODEM" >/dev/tty
+#                 echo ""
+#                 cat $OPERATOR/UULOG_TRANS_MODEM | grep "conversation complete cua/b"
+#                 echo $LJ Transmissao Modem `uulog | grep "conversation complete cua/b"` `date` `tty` >> $OPERATOR/LOG.OPERATOR;
+#                 else 
+#                    clear
+#                    echo " \07 NAO FOI EFETUADA TRANSMISSAO DE ARQUIVOS PELO MODEM " >/dev/tty
+#                 echo $LJ Transmissao NAO FOI EFETUADA TRASMISSAO DE ARQUIVOS PELO MODEM `date` `tty` >> $OPERATOR/LOG.OPERATOR;
+#              fi 
+#           fi
+#           ;;
+       0) clear
+          exit;;
+       *) echo;echo;echo
+          echo "                                 Opcao Invalida"
+     esac 
+     opc=999;echo;echo "Tecle <enter> para continuar "; read nada
+done

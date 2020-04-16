@@ -1,0 +1,14 @@
+echo " \07 ESTA OPÇÃO SÓ FUNCIONA SE A COMSAT ESTIVER NO AR ( TECLE ENTER)"
+read nada
+echo "user rxtx rxtx" >/tmp/w_envio
+echo "cd loja$LJ" >>/tmp/w_envio
+echo "dir *com*" >>/tmp/w_envio
+echo "dir *com* /tmp/dirlist" >>/tmp/w_envio
+ftp -in MAKROHO </tmp/w_envio
+
+echo "user rxtx rxtx" >/tmp/w_envio
+echo "cd loja$LJ" >>/tmp/w_envio
+echo "dir *com*" >>/tmp/w_envio
+echo "dir *com* /tmp/dirlist" >>/tmp/w_envio
+ftp -in MAKROHO </tmp/w_envio
+cat /tmp/dirlist1 >>/tmp/dirlist

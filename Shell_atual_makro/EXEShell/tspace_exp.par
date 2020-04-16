@@ -1,0 +1,12 @@
+tables=(
+
+CUST_SALES                     ,                                                
+TESTE )
+buffer=32768
+grants=n
+indexes=n
+rows=y
+constraints=n
+compress=y
+userid=ops$storep/ops$storep
+file=/work/tspace_tab.dmp

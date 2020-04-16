@@ -1,0 +1,68 @@
+OPT=999; msg=" "
+while  test $OPT -ne 0
+do
+#-----------------------------------------------------------------------------#
+. $OPERATOR/CABEC_OPERATOR.sh #criacao do cabecalho do operator
+#-----------------------------------------------------------------------------#
+      clear;tput rev
+      echo "     " $RAZAO "      " $LOJA "   " $DIA_SEM $DIA $MES $ANO $HORA
+      tput cup 2 24
+      echo "M E N U   P R I N C I P A L"
+      tput sgr0
+      echo
+      echo
+      echo "                            $TBOLD 1$TOFF - Verificar arquivos MBS"
+      echo "                            $TBOLD 2$TOFF - Oracle "
+      echo "                            $TBOLD 3$TOFF - Shutdown"
+      echo "                            $TBOLD 4$TOFF - Operações c/ TCP/IP"
+      echo "                            $TBOLD 5$TOFF - Export para Bco TESTE"
+      echo "                            $TBOLD 6$TOFF - Verificar log Bco TESTE"
+      echo "                            $TBOLD 7$TOFF - Liberacao usuario suheadof"
+      echo "                           $TBOLD 10$TOFF - Envia Relatorios para o Portal"
+      echo "                           $TBOLD 11$TOFF - Teste de Email Externo"
+      echo "                           $TBOLD 12$TOFF - Backup Mensal dba_ho"
+      echo "                           $TBOLD 13$TOFF - Gestao Usuarios do Linux"
+      echo "                            $TBOLD 0$TOFF - Fim"
+      tput cup 19 0;
+      echo "                             Opcao Escolhida -->  "  >/dev/tty
+      tput cup 19 49;
+      read opc
+      case $opc in
+ 1) clear; echo;
+          echo -n "NOME DO ARQUIVO               "; read ARQ
+          if [ -n "$ARQ" ]
+             then
+             ls -lia /home0/carga/carga_ibm/scrp_carga/ |grep $ARQ | more
+          else
+             ls -lai /home0/carga/carga_ibm/scrp_carga/* | more
+          fi
+          echo $LJ \(Mostrou Arquivos de Loja\) `date` `tty` >> $OPERATOR/LOG.OP;;
+         2) clear; sh ./oracle9.sh;;
+         3) clear; sh ./shutdown.sh;;
+         4) clear; sh ./tcpip.sh;;
+         5) clear; su - oracle -c "/home0/users/operator/JOBS_BCO_TESTE/exp_1_17.sh";;
+         6) clear; sh ./Verifica_log_Bco_Teste.sh;;
+         7) clear; echo "Esta opcao deve ser utilizada para liberacao de acesso ao usuario suheadof"
+                   echo " "
+                   echo "Um numero de incidente deve obrigatoriamente atrelado a essa solicitacao"
+                   echo " "
+                   echo "Tecle enter para prosseguir (ENTER)"
+                   echo " "
+                   read nada
+#                  sudo cp /root/libera_passwd_suheadof.sh /tmp/alv.txt
+#                  sudo chmod 777 /tmp/alv.txt
+#                  sudo /root/libera_passwd_suheadof.sh;;
+                   sudo /root/libera_suheadof;;
+###     10) clear; sh ./relatorios.sh;;
+        10) clear; sh /home0/makro/progs/exe/envia_relat_via_oper;;
+        11) clear; sh ./email_externo.s:xh;;
+        12) clear; sh ./backup_mensal_dba_ho.sh;;
+        13) clear; sh ./users.bash;;
+         0) clear
+
+            exit;;
+         *) echo;echo;echo
+            echo -n "               Opcao Invalida,  tecle <enter> para continuar ";read nada;;
+      esac
+      opc=999
+done

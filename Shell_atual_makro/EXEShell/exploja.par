@@ -1,0 +1,5 @@
+buffer=32768 
+file=/work/exploja.dmp
+full=y  
+log=/home/operator/exploja.log
+compress=y 

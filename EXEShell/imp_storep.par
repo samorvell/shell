@@ -1,0 +1,10 @@
+buffer=32768 
+file=/work1/expstorep.dmp
+grants=y
+commit=y
+indexes=n
+rows=y
+ignore=y
+fromuser=ops$storep
+touser=ops$storep
+log=/work1/LOGIMP.STOREP

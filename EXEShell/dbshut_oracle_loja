@@ -1,0 +1,88 @@
+:
+#
+# $Header: dbshut.sh.pp 30-may-2000.14:31:09 jboyce Exp $ dbshut.sh.pp Copyr (c) 1991 Oracle
+#
+
+###################################
+# 
+# usage: dbshut
+#
+# This script is used to shutdown ORACLE from /etc/rc(.local).
+# It should ONLY be executed as part of the system boot procedure.
+#
+#####################################
+
+ORATAB=/var/opt/oracle/oratab
+
+trap 'exit' 1 2 3
+case $ORACLE_TRACE in
+    T) set -x ;;
+esac
+    
+# Set path if path not set (if called from /etc/rc)
+case $PATH in
+    "") PATH=/bin:/usr/bin:/etc
+        export PATH ;;
+esac
+# Save LD_LIBRARY_PATH
+SAVE_LLP=$LD_LIBRARY_PATH
+
+#
+# Loop for every entry in oratab file and and try to shut down
+# that ORACLE
+#
+
+cat $ORATAB | while read LINE
+do
+    case $LINE in
+        \#*) ;;        #comment-line in oratab
+        *)
+#       Proceed only if third field is 'Y'.
+        if [ "`echo $LINE | awk -F: '{print $3}' -`" = "Y" ] ; then
+            ORACLE_SID=`echo $LINE | awk -F: '{print $1}' -`
+            if [ "$ORACLE_SID" = '*' ] ; then
+                ORACLE_SID=""
+            fi
+#           Called programs use same database ID
+            export ORACLE_SID
+            ORACLE_HOME=`echo $LINE | awk -F: '{print $2}' -`
+#           Called scripts use same home directory
+            export ORACLE_HOME
+#           Put $ORACLE_HOME/bin into PATH and export.
+            PATH=$ORACLE_HOME/bin:/bin:/usr/bin:/etc ; export PATH
+#           add for bug 652997
+            LD_LIBRARY_PATH=${SAVE_LLP}:${ORACLE_HOME}/lib ; export LD_LIBRARY_PATH
+            PFILE=${ORACLE_HOME}/dbs/init${ORACLE_SID}.ora
+
+#            See if it is a V6 or V7 database
+            if [ -f $ORACLE_HOME/bin/sqldba ] ; then
+                VERSION=`$ORACLE_HOME/bin/sqldba command=exit | awk '
+                    /SQL\*DBA: (Release|Version)/ {split($3, V, ".") ;
+                    print V[1]}'`
+                SQLDBA=sqldba
+            else
+                if [ -f $ORACLE_HOME/bin/svrmgrl ] ; then
+                    SQLDBA=svrmgrl
+                else
+                    SQLDBA="sqlplus /nolog"
+                fi
+            fi
+      case $VERSION in
+                  6)  sqldba command=shutdown ;;
+                  *)  $SQLDBA <<EOF
+connect internal
+shutdown immediate
+EOF
+                    ;;
+              esac
+
+            if test $? -eq 0 ; then
+                echo "Database \"${ORACLE_SID}\" shut down."
+echo $LJ \(SHUTDOWN - Oracle8 \) `date` `tty` >> $OPERATOR/LOG.OPERATOR;
+            else
+                echo "Database \"${ORACLE_SID}\" not shut down."
+            fi
+        fi
+        ;;
+    esac
+done

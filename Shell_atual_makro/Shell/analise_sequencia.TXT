@@ -1,0 +1,12 @@
+#! /bin/bash
+/home/makro/st_rcv/str_000$1 #$1 primeira variavel numero da loja
+dia=`$2`
+ls -ltr $2 #nome do arquivo a ser analisado
+tail $2
+
+
+#! /bin/bash
+cd /home2/makro/st_rcv/str_000$1 #Informar numero da loja
+ls -ltr $2* #Arquivo a ser analisado
+dia=`julian $3` #Dia juliano
+tail -2 $2$dia #Resultado esperado

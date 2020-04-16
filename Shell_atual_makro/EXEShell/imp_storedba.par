@@ -1,0 +1,10 @@
+buffer=32768 
+file=/home4/EXPFULL.dmp
+grants=y
+commit=y
+indexes=n
+rows=y
+ignore=y
+fromuser=ops$storep
+touser=ops$storep
+log=/work4/LOGIMP.STOREP

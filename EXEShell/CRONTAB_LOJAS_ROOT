@@ -1,0 +1,50 @@
+#ident	"@(#)root	1.19	98/07/06 SMI"	/* SVr4.0 1.1.3.1	*/
+#
+# The root crontab should be used to perform accounting data collection.
+#
+# The rtc command is run to adjust the real time clock if and when
+# daylight savings time changes.
+#
+10 3 * * 0,4 /etc/cron.d/logchecker
+10 3 * * 0   /usr/lib/newsyslog
+15 3 * * 0 /usr/lib/fs/nfs/nfsfind
+1 2 * * * [ -x /usr/sbin/rtc ] && /usr/sbin/rtc -c > /dev/null 2>&1
+30 3 * * * [ -x /usr/lib/gss/gsscred_clean ] && /usr/lib/gss/gsscred_clean
+#                                                        
+#ident  "@(#)uudemon.crontab    1.5     97/12/09 SMI"    
+#                                                        
+# This crontab is provided as a sample. For systems      
+# running UUCP edit the time schedule to suit, uncomment 
+# the following lines, and use crontab(1) to activate the
+# new schedule.                                          
+#                                                        
+48 8,12,16 * * * /usr/lib/uucp/uudemon.admin             
+#20 3 * * * /usr/lib/uucp/uudemon.cleanup #SUBST. POR /home/operator/geralog.sh
+###################### LOG DE TRANSMISSAO    #################################  
+00 00 * * 0,1,3,5,6 sh /home/operator/geralog.sh; echo "" >/home/operator/UULOG_TRANS_MODEM; echo "" >/home/operator/UULOG.DIARIO
+00 00 * * 2,4 sh /home/operator/geralog.sh; sh /home/operator/VERIFICA_TRANS_MODEM; echo "" >/home/operator/UULOG_TRANS_MODEM; echo "" >/home/operator/UULOG.DIARIO
+05 00 * * 0 cp /home/operator/UULOG.SEMANAL /home/operator/UULOG.SEMANAL.OLD; echo "" > /home/operator/UULOG.SEMANAL; gzip /home/operator/UULOG.SEMANAL.OLD
+##############################################################################  
+0 * * * * /usr/lib/uucp/uudemon.poll                     
+48 8,12,16 * * * /usr/lib/uucp/uudemon.admin             
+0 * * * * /usr/lib/uucp/uudemon.poll                     
+00,10,20,30,40,50 * * * * sh /home/operator/cancel_processos.sh >/dev/null
+#00 03 13 04 4 su - oracle -c 'sh /home/reorg/rebuild_index.sh'
+00 00 * * * sh /home/store/suporte/lockpass.sh >/dev/null 2>&1
+00 05 * * * sh /home/store/suporte/ftpusers.sh >/dev/null 2>&1
+05 01 * * * /usr/bin/sh /home/correio/fecha.sh >/home/correio/log/saida/fecha.log
+00,15,30,45 0-23 * * * sh /home/operator/trans_comsat.sh >/dev/null 2>&1
+00 3 * * * sh /home/operator/del_arq_temp.sh >/dev/null 2>&1
+00 05 * * 4 su - oracle -c "sh /home/oracle/products/8.1.7/ANALYZE_STOREP.sh"
+00,05,10,15,20,25,30,35,40,45,50,55 * * * * sh /home1/gw/mtatest.sh
+############################## TRANSMISSAO ###################################  
+* * * * * /usr/lib/uucp/uudemon.hour 
+* * * * * chmod 666 /devices/pci@1f,0/pci@1,1/isa@7/serial@0,2e8:*;chmod 666 /dev/cua/b; chown -h uucp:tty /dev/cua/b
+##############################################################################  
+30 02 * * * find /home/operator/tmp -type f -ctime +7 -exec rm -f {} \; >/dev/null 2>&1
+##############################################################################  
+00,15,30,45 * * * * su rxtx -c "sh /home/store/progs/exe/rcv_files_makroho.sh"
+01 00 5 11 * /etc/rc2.d/S75cron stop; /etc/rc2.d/S75cron start 
+00 04 5 11 * /etc/init.d/oracle stop; /etc/init.d/oracle start 
+01 00 25 02 * /etc/rc2.d/S75cron stop; /etc/rc2.d/S75cron start
+00 04 25 02 * /etc/init.d/oracle stop; /etc/init.d/oracle start

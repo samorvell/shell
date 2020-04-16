@@ -1,0 +1,14 @@
+#! /bin/bash
+clear
+echo "Informe o numero da loja:"
+read LOJA
+echo "Informe a quantidade de arquivos:"
+read QTD
+echo "Informe a data para analise dos arquivos aaaammdd:"
+read DATA
+dia=`julian $DATA`
+day=`date --date="-1 day" +20%y%m%d`
+
+if [ $DATA != $day ] ; then
+	cd /home2/makro/st_rcv/str_000$LOJA/old
+	ls -ltr $ARQ
